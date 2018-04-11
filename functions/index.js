@@ -113,35 +113,38 @@ app.use(authenticate);
 
 
 app.get('/usuario-asignatura', (req, res) => {
-	// TOFIX
-
 	const idUsuario = req.query.idUsuario;
 	const idAsignatura = req.query.idAsignatura;
 	if(idUsuario && idAsignatura){
 	    var key = "U:"+idUsuario+"-A:"+idAsignatura;
 	    return ref.child("Usuarios_Asignaturas").child(key).once('value').then((snapshot) => {
 		    let messages = [];
-		    snapshot.forEach((childSnapshot) => {
-		    	console.log(childSnapshot);
-		     	messages.push(childSnapshot);
-		    });
-
-    	 	return res.status(200).json(messages);
+		    messages.push(snapshot);
+		    return res.status(200).json(messages);
     	 });
-
-
-	  }else if(idAsignatura){
-	  
-	  }else if(idUsuario){
-	   
-	  }
+  	}else if(idAsignatura){
+	    return ref.child("Usuarios_Asignaturas").orderByChild("IdAsignatura").equalTo(idAsignatura).once('value').then((snapshot) => {
+		    let messages = [];
+		    snapshot.forEach(function(childSnapshot) {
+			     messages.push(childSnapshot);
+			  });
+		    return res.status(200).json(messages);
+		});
+  	}else if(idUsuario){
+	   	return ref.child("Usuarios_Asignaturas").orderByChild("IdUsuario").equalTo(idUsuario).once('value').then((snapshot) => {
+		    let messages = [];
+		    snapshot.forEach(function(childSnapshot) {
+			     messages.push(childSnapshot);
+  			});
+	    	return res.status(200).json(messages);
+	 	});
+  	}
   	res.status(200).send("OK");
 });
 
 app.post('/usuario-asignatura', (req, res) => {
 	const json = req.body;
 	var key = "U:"+json.idUsuario+"-A:"+json.idAsignatura;
-		console.log(key);
   	ref.child("Usuarios_Asignaturas").child(key).set({
    	 	IdUsuario: json.idUsuario,
     	IdAsignatura: json.idAsignatura
@@ -183,10 +186,10 @@ exports.asignaturas = functions.https.onRequest(app);
 
 function deleteUsuarioAsignatura(json){
   if(json.idUsuario && json.idAsignatura){
-    var key = "U:"+json.idUsuario+"-A:"+json.idAsignatura;
+    key = "U:"+json.idUsuario+"-A:"+json.idAsignatura;
     ref.child("Usuarios_Asignaturas").child(key).remove();
   }else if(json.idAsignatura){
-    var rels = ref.child("Usuarios_Asignaturas").orderByChild("IdAsignatura").equalTo(json.idAsignatura);
+    rels = ref.child("Usuarios_Asignaturas").orderByChild("IdAsignatura").equalTo(json.idAsignatura);
     rels.on('value', function(snapshot) {
         snapshot.forEach(function(data) {
           console.log(data.key);
@@ -194,7 +197,7 @@ function deleteUsuarioAsignatura(json){
         });
     });
   }else if(json.idUsuario){
-    var rels = ref.child("Usuarios_Asignaturas").orderByChild("IdUsuario").equalTo(json.idUsuario);
+    rels = ref.child("Usuarios_Asignaturas").orderByChild("IdUsuario").equalTo(json.idUsuario);
     rels.on('value', function(snapshot) {
         snapshot.forEach(function(data) {
           console.log(data.key);
