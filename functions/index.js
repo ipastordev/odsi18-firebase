@@ -39,16 +39,16 @@ app.post('/addAsignatura', (req, res) => {
 app.post('/updateAsignatura', (req,res) => {
 	const json = req.body;
 	var key = json.idAsignatura;
-	
-    rels = ref.child("Asignaturas/"+key).once("value", function(snapshot){	
+
+    rels = ref.child("Asignaturas/"+key).once("value", function(snapshot){
 		var exists = (snapshot.val() !== null);
 		if(exists)
 		{
 			ref.child("Asignaturas").child(key).update({
 					Descripcion: json.idDescripcion,
 					Nombre_asignatura: json.idNombre
-				});	
-		}	
+				});
+		}
 	});
 
 	res.status(200).send("OK");
@@ -93,8 +93,8 @@ app.post('/addTarea', (req, res) => {
 app.post('/updateTarea', (req,res) => {
 	const json = req.body;
 	var key = json.idTarea;
-	
-    rels = ref.child("Tareas/"+key).once("value", function(snapshot){	
+
+    rels = ref.child("Tareas/"+key).once("value", function(snapshot){
 		var exists = (snapshot.val() !== null);
 		if(exists)
 		{
@@ -102,8 +102,8 @@ app.post('/updateTarea', (req,res) => {
 					Fecha_de_creacion: json.idFecha,
 					Nombre_de_la_tarea: json.idNombre,
 					Tiempo_estimado: json.idTiempo
-				});	
-		}	
+				});
+		}
 	});
 
 	res.status(200).send("OK");
@@ -118,6 +118,65 @@ app.delete('/deleteTarea', (req, res) => {
 
 
 exports.tareas = functions.https.onRequest(app);
+
+////////////////////////////////////////////USUARIO-TAREA///////////////////////////////////////////////////
+
+app.get('/getUsuarioTarea', (req, res) => {
+        const idUsuario = req.query.idUsuario;
+        const idTarea = req.query.idTarea;
+	if(idUsuario && idTarea){
+		var key = "U:"+idUsuario+"-T:"+idTarea;
+
+		return ref.child("Usuarios_Tareas").child(key).once('value').then((snapshot) => {
+                    let messages = [];
+                    messages.push(snapshot);
+                    return res.status(200).json(messages);
+         	});
+	}
+        res.status(200).send("OK");
+});
+
+
+app.post('/addUsuarioTarea', (req, res) => {
+        const json = req.body;
+	var key = "U:"+json.idUsuario+"-T:"+json.idTarea;
+
+        ref.child("Usuarios_Tareas").child(key).set({
+                IdUsuario: json.idUsuario,
+        	IdTarea: json.idTarea,
+                Tiempo_realizado: json.idTiempo
+        });
+        res.status(200).send("OK");
+});
+
+app.post('/updateUsuarioTarea', (req,res) => {
+        const json = req.body;
+	var key = "U:"+json.idUsuario+"-T:"+json.idTarea;
+
+    rels = ref.child("Usuarios_Tareas/"+key).once("value", function(snapshot){
+                var exists = (snapshot.val() !== null);
+                if(exists)
+                {
+                        ref.child("Usuarios_Tareas").child(key).update({
+                                        IdUsuario: json.IdUsuario,
+                                        IdTarea: json.IdTarea,
+                                        Tiempo_realizado: json.idTiempo
+                                });
+                }
+        });
+
+        res.status(200).send("OK");
+});
+
+app.delete('/deleteUsuarioTarea', (req, res) => {
+        const json = req.body;
+	var key = "U:"+json.idUsuario+"-T:"+json.idTarea;
+        ref.child("Usuarios_Tareas").child(key).remove();
+    res.status(200).send("OK");
+});
+
+exports.usuariosTareas = functions.https.onRequest(app);
+
 
 
 ////////////////////////////////////USUARIO-ASIGNATURA/////////////////////////////////////
@@ -188,21 +247,22 @@ app.delete('/usuario-asignatura', (req, res) => {
 });
 
 app.post('/updateUsuarioAsignatura', (req,res) => {
-        const json = req.body;
-        var key = "U:"+json.idUsuario+"-A:"+json.idAsignatura;
+	const json = req.body;
+	var key = "U:"+json.idUsuario+"-A:"+json.idAsignatura;
 
     rels = ref.child("Usuarios_Asignaturas/"+key).once("value", function(snapshot){
-                var exists = (snapshot.val() !== null);
-                if(exists)
-                {
-                        ref.child("Usuarios_Asignaturas").child(key).update({
-                                        IdAsignatura: json.IdAsignatura,
-                                        IdUsuario: json.IdUsuario
-                                });
-                }
-        });
-        res.status(200).send("OK");
+		var exists = (snapshot.val() !== null);
+		if(exists)
+		{
+			ref.child("Usuarios_Asignaturas").child(key).update({
+					IdAsignatura: json.IdAsignatura,
+					IdUsuario: json.IdUsuario
+				});
+		}
+	});
+	res.status(200).send("OK");
 });
+
 
 
 app.post('/usuario-asignatura-multiple', (req, res) => {
@@ -252,3 +312,4 @@ function deleteUsuarioAsignatura(json){
     });
   }
 }
+
