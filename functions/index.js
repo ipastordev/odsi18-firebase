@@ -188,23 +188,21 @@ app.delete('/usuario-asignatura', (req, res) => {
 });
 
 app.post('/updateUsuarioAsignatura', (req,res) => {
-	const json = req.body;
-	var key = "U:"+json.idUsuario+"-A:"+json.idAsignatura;
-	
-    rels = ref.child("Asignaturas/"+key).once("value", function(snapshot){	
-		var exists = (snapshot.val() !== null);
-		if(exists)
-		{
-			ref.child("Asignaturas").child(key).update({
-					IdAsignatura: json.idAsignatura,
-					IdUsuario: json.idUsuario
-				});	
-		}	
-	});
+        const json = req.body;
+        var key = "U:"+json.idUsuario+"-A:"+json.idAsignatura;
 
-	res.status(200).send("OK");
+    rels = ref.child("Usuarios_Asignaturas/"+key).once("value", function(snapshot){
+                var exists = (snapshot.val() !== null);
+                if(exists)
+                {
+                        ref.child("Usuarios_Asignaturas").child(key).update({
+                                        IdAsignatura: json.IdAsignatura,
+                                        IdUsuario: json.IdUsuario
+                                });
+                }
+        });
+        res.status(200).send("OK");
 });
-
 
 
 app.post('/usuario-asignatura-multiple', (req, res) => {
