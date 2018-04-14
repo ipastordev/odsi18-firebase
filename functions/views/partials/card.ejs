@@ -1,0 +1,23 @@
+<!-- partials/card.ejs -->
+
+<div class="col s6 m3">
+  <div class="card blue-grey darken-1">
+    <div class="card-content white-text">
+      <span class="card-title"><%- titulo %></span>
+        <p><%- descripcion %></p>
+    </div>
+
+    <!-- Acciones dentro de card -->
+    <% if(teacher) { %>
+    <div class="card-action">
+      <a href="#">
+        <i class="material-icons right">edit</i>
+      </a>
+      <a href="#">
+        <i class="material-icons right">delete</i>
+      </a>
+    </div>
+    <% } %>
+
+  </div>
+</div>

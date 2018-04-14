@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <%- include('partials/header') %>
+</head>
+<body>
+
+	<!-- Navbar -->
+	<%- include('partials/navbar') %>
+
+    <!-- Contenido -->
+    <div>
+        <div class="row">
+            <% for(var i=0; i < abbr.length; i++){
+                 titulo = abbr[i]
+                 descripcion = nombre[i]
+                 teacher = false %>
+                <%- include('partials/card') %>
+            <% } %>
+        </div>
+    </div>
+
+</body>
+</html>

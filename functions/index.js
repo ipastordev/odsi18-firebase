@@ -109,7 +109,7 @@ const authenticate = (req, res, next) => {
   }
 };
 
-app.use(authenticate);
+// app.use(authenticate);
 
 
 app.get('/usuario-asignatura', (req, res) => {
@@ -206,3 +206,48 @@ function deleteUsuarioAsignatura(json){
     });
   }
 }
+
+
+
+
+
+/**************************************************
+              HOSTING - PAGINA WEB
+    He quitado la autorizacion de app
+****************************************************/
+const engines = require('consolidate');
+
+//app.engine('hbs', engines.handlebars);
+app.set('views', './views');
+//app.set('view engine', 'hbs');
+app.set('view engine', 'ejs')
+
+app.get("/", (request, response) => {
+  response.render('index', {});
+});
+
+app.get("/inicioUsuario", (request, response) => {
+  response.render('templateUser', {
+    abbr: ["ODSI", "GID", "SGI", "ITI", "CCR", "DSAR", "RA", "GAII", "SUE", "IUAU", "MN"], 
+    nombre: ["Organización y Dirección de Sistemas de Información", "Gestión Intensiva de Datos: Big Data", "Sistemas Gráficos Interactivos", "Integración de las Tecnologías de la Información y Técnicas Avanzadas de Ingeniería del Software", "Codificación y Criptografia", "Diseño de Sistemas de Alto Rendimiento", "Razonamiento Automático", "Gestión y Administración de Infraestructuras Informáticas", "Sistemas Ubícuos y Empotrados", "Interfaces de Usuario y Acceso Universal", "Métodos Numéricos"]
+  });
+})
+
+app.get("/inicioProfesor", (request, response) => {
+  response.render('templateTeacher', {
+    abbr: ["ODSI", "GID", "SGI", "ITI", "CCR", "DSAR", "RA", "GAII", "SUE", "IUAU", "MN"], 
+    nombre: ["Organización y Dirección de Sistemas de Información", "Gestión Intensiva de Datos: Big Data", "Sistemas Gráficos Interactivos", "Integración de las Tecnologías de la Información y Técnicas Avanzadas de Ingeniería del Software", "Codificación y Criptografia", "Diseño de Sistemas de Alto Rendimiento", "Razonamiento Automático", "Gestión y Administración de Infraestructuras Informáticas", "Sistemas Ubícuos y Empotrados", "Interfaces de Usuario y Acceso Universal", "Métodos Numéricos"]
+  })
+})
+
+app.get("/nuevaAsignatura", (request, response) => {
+  response.render('formAsignatura', {
+    pagina:"Nueva",
+    abbr:"", 
+    nombre:"", 
+    usuarios:[],
+    accion:"Guardar"
+  });
+})
+
+exports.app = functions.https.onRequest(app);
