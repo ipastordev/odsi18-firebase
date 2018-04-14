@@ -12,83 +12,171 @@ var ref = db.ref("/");
 
 
 //////////////////////////////////ASIGNATURAS/////////////////////////////////////
-//Función para añadir una asignatura
-//EJ:?text=ODSI,Organización y Dirección de Sistemas de Información,Descripcion
-exports.addAsignatura = functions.https.onRequest((req, res) => {
-  const valor = req.query.text;
-  var valorSplited = valor.split(",");
 
-  var asignaturaRef = ref.child("Asignaturas");
-
-  asignaturaRef.child(valorSplited[0]).set({
-    Nombre_asignatura: valorSplited[1],
-    Descripcion: valorSplited[2]
-  });
-
+app.get('/getAsignatura', (req, res) => {
+	const idAsignatura = req.query.idAsignatura;
+	if(idAsignatura){
+	    var key = idAsignatura;
+	    return ref.child("Asignaturas").child(key).once('value').then((snapshot) => {
+		    let messages = [];
+		    messages.push(snapshot);
+		    return res.status(200).json(messages);
+    	 });
+  	}
+  	res.status(200).send("OK");
 });
 
-exports.updateAsignatura = functions.https.onRequest((req, res) => {
-  const valor = req.query.text;
-  var valorSplited = valor.split(",");
-
-  var asignaturaRef = ref.child("Asignaturas");
-
-  asignaturaRef.child(valorSplited[0]).update({
-    Nombre_asignatura: valorSplited[1],
-    Descripcion: valorSplited[2]
-  });
-
+app.post('/addAsignatura', (req, res) => {
+	const json = req.body;
+	var key = json.idAsignatura;
+  	ref.child("Asignaturas").child(key).set({
+   	 	Descripcion: json.idDescripcion,
+    	Nombre_asignatura: json.idNombre
+	});
+  	res.status(200).send("OK");
 });
 
-exports.deleteAsignatura = functions.https.onRequest((req, res) => {
+app.post('/updateAsignatura', (req,res) => {
+	const json = req.body;
+	var key = json.idAsignatura;
 
-  const valor = req.query.text;
-  var valorSplited = valor.split(",");
+    rels = ref.child("Asignaturas/"+key).once("value", function(snapshot){
+		var exists = (snapshot.val() !== null);
+		if(exists)
+		{
+			ref.child("Asignaturas").child(key).update({
+					Descripcion: json.idDescripcion,
+					Nombre_asignatura: json.idNombre
+				});
+		}
+	});
 
-  var asignaturaRef = ref.child("Asignaturas");
-
-  asignaturaRef.child(valorSplited[0]).remove();
+	res.status(200).send("OK");
 });
+
+app.delete('/deleteAsignatura', (req, res) => {
+  	const json = req.body;
+  	var key = json.idAsignatura;
+	ref.child("Asignaturas").child(key).remove();
+    res.status(200).send("OK");
+});
+
+
+exports.asignaturas = functions.https.onRequest(app);
 
 ////////////////////////////////////TAREAS/////////////////////////////////////
 
-exports.addTarea = functions.https.onRequest((req, res) => {
-  const valor = req.query.text;
-  var valorSplited = valor.split(",");
-
-  var tareaRef = ref.child("Tareas");
-
-  tareaRef.child(valorSplited[0]).set({
-    Nombre_de_la_tarea: valorSplited[1],
-    Tiempo_estimado: valorSplited[2],
-    Fecha_de_creacion: valorSplited[3]
-  });
-
+app.get('/getTarea', (req, res) => {
+	const idTarea = req.query.idTarea;
+	if(idTarea){
+	    var key = idTarea;
+	    return ref.child("Tareas").child(key).once('value').then((snapshot) => {
+		    let messages = [];
+		    messages.push(snapshot);
+		    return res.status(200).json(messages);
+    	 });
+  	}
+  	res.status(200).send("OK");
 });
 
-exports.updateTarea = functions.https.onRequest((req, res) => {
-  const valor = req.query.text;
-  var valorSplited = valor.split(",");
-
-  var tareaRef = ref.child("Tareas");
-
-  tareaRef.child(valorSplited[0]).update({
-    Nombre_de_la_tarea: valorSplited[1],
-    Tiempo_estimado: valorSplited[2],
-    Fecha_de_creacion: valorSplited[3]
-  });
-
+app.post('/addTarea', (req, res) => {
+	const json = req.body;
+	var key = json.idTarea;
+  	ref.child("Tareas").child(key).set({
+   	 	Fecha_de_creacion: json.idFecha,
+    	Nombre_de_la_tarea: json.idNombre,
+		Tiempo_estimado: json.idTiempo
+	});
+  	res.status(200).send("OK");
 });
 
-exports.deleteTarea = functions.https.onRequest((req, res) => {
-  const valor = req.query.text;
-  var valorSplited = valor.split(",");
+app.post('/updateTarea', (req,res) => {
+	const json = req.body;
+	var key = json.idTarea;
 
-  var tareaRef = ref.child("Tareas");
+    rels = ref.child("Tareas/"+key).once("value", function(snapshot){
+		var exists = (snapshot.val() !== null);
+		if(exists)
+		{
+			ref.child("Tareas").child(key).update({
+					Fecha_de_creacion: json.idFecha,
+					Nombre_de_la_tarea: json.idNombre,
+					Tiempo_estimado: json.idTiempo
+				});
+		}
+	});
 
-  tareaRef.child(valorSplited[0]).remove()
-
+	res.status(200).send("OK");
 });
+
+app.delete('/deleteTarea', (req, res) => {
+  	const json = req.body;
+  	var key = json.idTarea;
+	ref.child("Tareas").child(key).remove();
+    res.status(200).send("OK");
+});
+
+
+exports.tareas = functions.https.onRequest(app);
+
+////////////////////////////////////////////USUARIO-TAREA///////////////////////////////////////////////////
+
+app.get('/getUsuarioTarea', (req, res) => {
+        const idUsuario = req.query.idUsuario;
+        const idTarea = req.query.idTarea;
+	if(idUsuario && idTarea){
+		var key = "U:"+idUsuario+"-T:"+idTarea;
+
+		return ref.child("Usuarios_Tareas").child(key).once('value').then((snapshot) => {
+                    let messages = [];
+                    messages.push(snapshot);
+                    return res.status(200).json(messages);
+         	});
+	}
+        res.status(200).send("OK");
+});
+
+
+app.post('/addUsuarioTarea', (req, res) => {
+        const json = req.body;
+	var key = "U:"+json.idUsuario+"-T:"+json.idTarea;
+
+        ref.child("Usuarios_Tareas").child(key).set({
+                IdUsuario: json.idUsuario,
+        	IdTarea: json.idTarea,
+                Tiempo_realizado: json.idTiempo
+        });
+        res.status(200).send("OK");
+});
+
+app.post('/updateUsuarioTarea', (req,res) => {
+        const json = req.body;
+	var key = "U:"+json.idUsuario+"-T:"+json.idTarea;
+
+    rels = ref.child("Usuarios_Tareas/"+key).once("value", function(snapshot){
+                var exists = (snapshot.val() !== null);
+                if(exists)
+                {
+                        ref.child("Usuarios_Tareas").child(key).update({
+                                        IdUsuario: json.IdUsuario,
+                                        IdTarea: json.IdTarea,
+                                        Tiempo_realizado: json.idTiempo
+                                });
+                }
+        });
+
+        res.status(200).send("OK");
+});
+
+app.delete('/deleteUsuarioTarea', (req, res) => {
+        const json = req.body;
+	var key = "U:"+json.idUsuario+"-T:"+json.idTarea;
+        ref.child("Usuarios_Tareas").child(key).remove();
+    res.status(200).send("OK");
+});
+
+exports.usuariosTareas = functions.https.onRequest(app);
+
 
 
 ////////////////////////////////////USUARIO-ASIGNATURA/////////////////////////////////////
@@ -158,6 +246,23 @@ app.delete('/usuario-asignatura', (req, res) => {
   	res.status(200).send("OK");
 });
 
+app.post('/updateUsuarioAsignatura', (req,res) => {
+	const json = req.body;
+	var key = "U:"+json.idUsuario+"-A:"+json.idAsignatura;
+
+    rels = ref.child("Usuarios_Asignaturas/"+key).once("value", function(snapshot){
+		var exists = (snapshot.val() !== null);
+		if(exists)
+		{
+			ref.child("Usuarios_Asignaturas").child(key).update({
+					IdAsignatura: json.IdAsignatura,
+					IdUsuario: json.IdUsuario
+				});
+		}
+	});
+	res.status(200).send("OK");
+});
+
 
 
 app.post('/usuario-asignatura-multiple', (req, res) => {
@@ -181,7 +286,8 @@ app.delete('/usuario-asignatura-multiple', (req, res) => {
   res.status(200).send("OK");
 });
 
-exports.asignaturas = functions.https.onRequest(app);
+//No se puede usar - para nombrar las funciones
+exports.usuariosAsignaturas = functions.https.onRequest(app);
 
 
 function deleteUsuarioAsignatura(json){
@@ -206,8 +312,6 @@ function deleteUsuarioAsignatura(json){
     });
   }
 }
-
-
 
 
 
