@@ -27,13 +27,45 @@ app.get('/getAsignatura', (req, res) => {
 });
 
 app.post('/addAsignatura', (req, res) => {
-	const json = req.body;
-	var key = json.idAsignatura;
-  	ref.child("Asignaturas").child(key).set({
-   	 	Descripcion: json.idDescripcion,
-    	Nombre_asignatura: json.idNombre
-	});
-  	res.status(200).send("OK");
+    const json = req.body;
+    var msg = "[";
+
+    var msg_idSubject = checkIsValidString(json.idAsignatura, "Introduzca el identificador de la asignatura");
+    if(msg_idSubject !== ""){
+      msg = msg + "'" + msg_idSubject +  "'";
+    }
+  
+    var msg_nameSubject = checkIsValidString(json.idNombre, "Introduzca el nombre de la asignatura");
+    if(msg_nameSubject !== ""){
+        if(msg !== "["){
+          msg = msg + ", ";
+        }
+        msg = msg +  "'" + msg_nameSubject +  "'";
+    }
+  
+    var msg_descriptionSubject = checkIsValidString(json.idDescripcion, "Introduzca la descripción de la asignatura");
+    if(msg_descriptionSubject !== ""){
+      if(msg !== "["){
+          msg = msg + ", ";
+        }
+      msg = msg +  "'" + msg_descriptionSubject +  "'";
+    }
+  
+    msg = msg + "]";
+
+    if(msg === "[]") {
+        //Almacenar asignatura en la BD y mostrar mensaje informandole al usuario
+        console.log('Guardada asignatura: ' + json.idAsignatura + " " + json.idNombre + " " + json.idDescripcion);
+        msg = "['La asignatura se creó correctamente']";
+        var key = json.idAsignatura;
+        ref.child("Asignaturas").child(key).set({
+            Descripcion: json.idDescripcion,
+            Nombre_asignatura: json.idNombre
+        });
+    }else{
+        console.log('No se pudo guardar asignatura: ' + json.idAsignatura + " " + json.idNombre + " " + json.idDescripcion);
+    }
+  	res.status(200).json(msg);
 });
 
 app.post('/updateAsignatura', (req,res) => {
@@ -80,15 +112,95 @@ app.get('/getTarea', (req, res) => {
 });
 
 app.post('/addTarea', (req, res) => {
-	const json = req.body;
-	var key = json.idTarea;
-  	ref.child("Tareas").child(key).set({
-   	 	Fecha_de_creacion: json.idFecha,
-    	Nombre_de_la_tarea: json.idNombre,
-		Tiempo_estimado: json.idTiempo
-	});
-  	res.status(200).send("OK");
+    const json = req.body;
+    
+    var msg = "[";
+
+    var msg_idHomework = checkIsValidString(json.idTarea, "Introduzca el identificador de la tarea");
+    if(msg_idHomework !== ""){
+        msg = msg + "'" + msg_idHomework +  "'";
+    }
+
+    var msg_nameHomework = checkIsValidString(json.idNombre, "Introduzca el nombre de la tarea");
+    if(msg_nameHomework !== ""){
+        if(msg !== "["){
+            msg = msg + ", ";
+        }
+        msg = msg +  "'" + msg_nameHomework +  "'";
+    }
+
+    var msg_estimatedTime = checkIsValidEstimatedTime(json.idTiempo);
+    if(msg_estimatedTime !== ""){
+        if(msg !== "["){
+            msg = msg + ", ";
+        }
+        msg = msg +  "'" + msg_estimatedTime +  "'";
+    }
+
+
+    var msg_creationDate = checkIsValidCreationDate(json.idFecha);
+    if(msg_creationDate !== ""){
+        if(msg !== "["){
+            msg = msg + ", ";
+        }
+        msg = msg + "'" + msg_creationDate +  "'";
+    }
+    msg = msg + "]";
+
+    if(msg === "[]") {
+        //Almacenar tarea en la BD y mostrar mensaje informandole al usuario
+        console.log('Guardada tarea: '  + json.idTarea + " " + json.idNombre + " "  + json.idTiempo + " " + json.idFecha);
+        msg = "['La tarea se creó correctamente']";
+        var key = json.idTarea;
+        ref.child("Tareas").child(key).set({
+              Fecha_de_creacion: json.idFecha,
+          Nombre_de_la_tarea: json.idNombre,
+          Tiempo_estimado: json.idTiempo
+      });
+    }else {
+        console.log('No se pudo guardar tarea: ' + json.idTarea + " " + json.idNombre + " "  + json.idTiempo + " " + json.idFecha);
+    }
+    res.status(200).json(msg);
+
+  	
 });
+
+  //Expect input as HH:MM, HHH:MM: 01:40, 00:20, 85:40, 120:20, max 999:59
+  function checkIsValidEstimatedTime(e) {
+    var m;
+    if(e !== "" && e !== null &&  e !== undefined)
+    {
+        var trimmedEstimatedTime = e.trim();
+        if(/^(0[0-9]{1}|[1-9]{1}[0-9]{1,2}):([0-5][0-9])$/.test(trimmedEstimatedTime)){
+            m = "";
+        }else{
+            m = "El tiempo estimado no tiene el formato correcto";
+        }
+    }else{
+        m = "Introduzca un tiempo estimado para la tarea";
+    }
+        return m;
+  }
+
+  //Fecha a partir de la fecha actual?
+ // Expect input as d/m/y: 2/2/1990, 02/02/1990
+function checkIsValidCreationDate(d) {
+    var m;
+    if(d !== "" && d !== null &&  d !== undefined)
+    {
+        var trimmedCreationDate = d.trim();
+        var bits = trimmedCreationDate.split('/');
+        var date = new Date(bits[2], bits[1] - 1, bits[0]);
+        if(date && Number(date.getMonth() + 1) === Number(bits[1])){
+            m = "";
+        }else{
+            m = "La fecha de creación no tiene el formato correcto";
+        }
+    }else{
+        m = "Introduzca una fecha de creación para la tarea";
+    }
+        return m;
+  }
 
 app.post('/updateTarea', (req,res) => {
 	const json = req.body;
@@ -312,6 +424,156 @@ function deleteUsuarioAsignatura(json){
     });
   }
 }
+
+////////////////////////////////////USUARIOS/////////////////////////////////////
+
+//key: UTF-8 encoded, cannot contain . $ # [ ] /
+app.post('/usuario', (req, res) => {
+    const json = req.body;
+    
+    var msg = "[";
+  
+    var msg_name = checkIsValidString(json.uNombre, "Introduzca el nombre del usuario");
+    if(msg_name !== ""){
+      msg = msg + "'" + msg_name +  "'";
+    }
+  
+    var msg_surname = checkIsValidString(json.uApellido, "Introduzca el apellido del usuario");
+    if(msg_surname !== ""){
+        if(msg !== "["){
+          msg = msg + ", ";
+        }
+        msg = msg +  "'" + msg_surname +  "'";
+    }
+  
+    var msg_email = checkIsValidEmail(json.uEmail);
+    if(msg_email !== ""){
+      if(msg !== "["){
+          msg = msg + ", ";
+        }
+      msg = msg +  "'" + msg_email +  "'";
+    }
+  
+  
+    var msg_isTeacher = checkIsValidIsTeacher(json.uProfesor);
+    if(msg_isTeacher !== ""){
+      if(msg !== "["){
+          msg = msg + ", ";
+        }
+      msg = msg + "'" + msg_isTeacher +  "'";
+    }
+    msg = msg + "]";
+  
+    if(msg === "[]") {
+        //Almacenar usuario en la BD y mostrar mensaje informandole al usuario
+        console.log('Guardado usuario: ' + json.uNombre + " " + json.uApellido + " " + json.uEmail + " " + json.uProfesor);
+        msg = "['El usuario se creó correctamente']";
+        var key = "U:"+encodeKey(json.uEmail);
+        ref.child("Usuarios").child(key).set({
+            Nombre: json.uNombre,
+            Apellido: json.uApellido,
+            Profesor: json.uProfesor
+      });
+    }else {
+        console.log('No se pudo guardar usuario: ' + json.uNombre + " " + json.uApellido + " " + json.uEmail + " " + json.uProfesor);
+    }
+        res.status(200).json(msg);
+  });
+  
+  function encodeKey(s) {
+       return encodeURIComponent(s).replace(/\./g,'%2E'); 
+      }
+  
+  function decodeKey(s) {
+      return decodeURIComponent(s).replace(/%2E/g, '.'); 
+      }
+  
+  
+  //Validacion general, para aquellos string que no tienen regex definida
+  //Los nombres ni apellidos no se validan con regex
+  function checkIsValidString(s, msgError){
+    var m;
+    if(s !== "" && s !== null &&  s !== undefined){
+      var trimmedString = s.trim();//El string no son todo espacios en blanco
+      if(trimmedString !== ""){
+        m = "";
+      }else{
+          m = msgError;
+      }
+    }else{
+        m = msgError;
+    }
+    return m;
+   }
+  
+  
+   function checkIsValidEmail(e){
+    var m;
+    if(e !== "" && e !== null &&  e !== undefined)
+    {
+        var trimmedEmail = e.trim();
+        if(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(trimmedEmail)){
+            m = "";
+        }else{
+            m = "El email no tiene el formato correcto";
+        }
+    }else{
+        m="Introduzca el email del usuario"
+    }
+        return m;
+   }
+  
+  
+   //Pongo esta funcion o si recibo el param uProfesor y no tiene el valor value
+   // supongo que es teacher el usuario ?
+  
+   //uProfesor sera un checkbox que se selecciona o no
+   // <input type="checkbox" name="uProfesor" value="true" checked="checked"> Es profesor <br>
+   //action_page.php?uProfesor=true (si se selecciona)
+   //action_page.php (si no se selecciona)
+   function checkIsValidIsTeacher(i){
+    var m;
+    if(i !== "" && i !== null && i !== undefined)
+    {
+       if(i !== true && i !== false){ 
+            m = "El valor para el parámetro uProfesor no es válido";
+       }else{
+           m = "";
+       }
+    }else{
+        m = "No se ha indicado si el usuario es profesor o no";
+    }
+        return m;
+   }
+  
+  
+   app.delete('/usuario', (req, res) => {
+      const json = req.body;
+      deleteUsuario(json)
+      console.log("Eliminado el usuario " + json.uEmail);
+      res.status(200).send("El usuario se eliminó correctamente");
+  });
+  
+  function deleteUsuario(json){
+    if(json.uNombre && json.uApellido && json.uEmail && json.uProfesor){
+      var key = "U:"+encodeKey(json.uEmail);
+      ref.child("Usuarios").child(key).remove();
+    }
+  }
+  
+  app.get('/usuario', (req, res) => {
+      const uNombre = req.query.uNombre;
+      const uApellido = req.query.uApellido;
+      const uEmail = encodeKey(req.query.uEmail);
+      const uProfesor = req.query.uProfesor;    
+  
+      var key = "U:"+uEmail;
+      return ref.child("Usuarios").child(key).once('value').then((snapshot) => {
+          let messages = [];
+          messages.push(snapshot);
+          return res.status(200).json(messages);
+          });
+  });
 
 
 
