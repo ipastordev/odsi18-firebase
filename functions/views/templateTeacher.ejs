@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <%- include('partials/header') %>
+    <%- include('partials/header') %>    
 </head>
 <body>
 
@@ -20,8 +20,15 @@
 		</div>
 	</div>
 
+	<!-- Action Button -->
 	<%- include('partials/actionButton') %>
 
+	<!-- Dialogo -->
+	<dialog id="dialogoNew" style="width: 70%">
+		<%- include('partials/formularioNuevo') %>
+	</dialog>
+	<!-- Script necesario para dialogo -->
+	<%-include('partials/dialogControles') %>
 
 </body>
 </html>

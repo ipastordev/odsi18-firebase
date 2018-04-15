@@ -10,14 +10,17 @@
       #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
       #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
       #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
+      
       #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
       @media (max-width: 600px) {
         body, #message { margin-top: 0; background: white; box-shadow: none; }
         body { border-top: 16px solid #ffa100; }
       }
     </style>
+
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+    <%- include('partials/header') %>
     
   </head>
   <body>
@@ -41,9 +44,30 @@
               <label for="icon_telephone">Contraseña</label>
             </div>
           </div>
-          <a href="" style="float: right">Entrar</a>
         </form>
+        <a href="" class="btn" style="float: right">Entrar</a>
       </div>
+
+      <!-- Otras opciones -->
+      <hr><br>
+      <center>
+        <div class="row">
+          <div class="col s12">
+            <a class="btn red darken-1" style="width: 60%">
+              <i class="fa fa-google"></i> 
+              <text>Iniciar con Google</text>
+            </a>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col s12">
+            <a class="btn indigo darken-2" style="width: 60%">
+              <i class="fa fa-facebook"></i>
+              <text>Iniciar con Facebook</text>
+            </a>
+          </div>
+        </div>
+      </center>
 
     </div>
   </body>

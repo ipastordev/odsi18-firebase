@@ -9,7 +9,7 @@
     "public": "public",
     "rewrites":[{
       "source": "**",
-      "function": "app"
+      "function": "web"
     }]
   }
 }

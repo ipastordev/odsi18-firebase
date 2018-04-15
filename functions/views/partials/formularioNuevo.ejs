@@ -1,0 +1,63 @@
+<script type="text/javascript">
+		$(document).ready(function(){
+			$('.chips').chips();
+			$('.chips-placeholder').chips({
+				placeholder: 'Insertar correos...',
+				secondaryPlaceholder: '+Correo'
+			});
+
+			var elem = document.querySelector('.chips');
+			var instance = M.Chips.getInstance(elem);
+
+			var usuarios = "<%= usuarios %>";
+			usuarios = usuarios.split(",");
+
+			for(var i=0; i < usuarios.length; i++){
+				instance.addChip({
+				    tag: usuarios[i],
+					image: '', // optional
+				});
+			}
+			
+		});
+	</script>
+
+
+	<div>
+		<h3><%= pagina %> asignatura</h3>
+
+		<!-- Inputs -->
+		<div class="row">
+			<form class="col s12">
+				<div class="row">
+					<div class="input-field col s4">
+						<input type="text" id="text_abbr" maxlength="5" value="<% abbrForm %>">
+						<label for="text_abbr">Abretura de la asignatura</label>
+					</div>
+					<div class="input-field col s8">
+						<input type="text" id="text_nombre" value="<% nombreForm %>">
+						<label for="text_nombre">Nombre de la asignatura</label>
+					</div>
+				</div>
+				<div class="row">
+					<p class="caption">Introduce el correo y pulsa enter.</p>
+					<div class="chips chips-placeholder"></div>
+				</div>
+			</form>			
+		</div>
+
+		<!-- Buttons -->
+		<div class="row">
+			<div class="col s4 push-s6">
+				<button class="btn waves-effect waves-light red lighten-1 right" name="action" id="cancelarModal">Cancelar
+					<i class="material-icons left">delete</i>
+				</button>
+			</div>
+			<div class="col s8">
+				<button class="btn waves-effect waves-light light-blue darken-1 right" type="submit" name="action"><%= accion %>
+					<i class="material-icons left">save</i>
+				</button>
+			</div>
+		</div>
+
+	</div>

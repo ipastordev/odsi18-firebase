@@ -1,0 +1,12 @@
+<script type="text/javascript">
+	var $newButton = $('#addNew'),
+    	$pantallaDialogo = $('#dialogoNew');
+
+    $newButton.on('click', function(){
+    	$pantallaDialogo[0].showModal();
+    });
+
+    $('#cancelarModal').on('click', function(){
+    	$pantallaDialogo[0].close();
+    });
+</script>
