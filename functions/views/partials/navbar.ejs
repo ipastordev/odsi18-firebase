@@ -3,6 +3,7 @@
 <nav style="margin-bottom: 20px">
 	<div class="nav-wrapper teal lighten-2">
 	    <a href="/inicioUsuario" class="brand-logo" style="margin-left: 15px">Gestor de Tiempos</a>
+	    <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
 		<ul id="nav-mobile" class="right hide-on-med-and-down">
 			<li>
 				<a href="/about">
@@ -16,4 +17,32 @@
 	       	</li>
 	   	</ul>
 	</div>
+
+	<!-- Mobile/Small screen -->
+	<ul class="sidenav" id="mobile-demo">
+    	<li><a href="/about">¿Cómo funciona?</a></li>
+    	<li><a href="/logout">Cerrar sesión</a></li>
+  	</ul>
+
 </nav>
+
+<script type="text/javascript">
+	var element = document.querySelector('.sidenav');
+	var instance = M.Sidenav.init(element, );
+
+	$(document).ready(function(){
+		$('.sidenav').sidenav();
+	})
+
+	var originalText = $('.brand-logo');
+	console.log(originalText)
+
+	$(window).resize(function(){
+		if($(window).width() < 600){
+			$('.brand-logo').css("font-size", "15px")
+		}else{
+			$('.brand-logo').css("font-size", "2.1rem")
+		}
+	})
+
+</script>
