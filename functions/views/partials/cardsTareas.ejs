@@ -1,0 +1,37 @@
+<!-- partials/cardTareas.ejs -->
+
+<div class="col s6 m3">
+  <div class="card blue-grey darken-1" id="tarjeta">
+    <div class="card-content white-text">
+      <p><%- descripcion %></p>
+    </div>
+
+    <!-- Acciones dentro de card -->
+    <div class="row">
+    <div class="card-action">
+      <text style="margin-left:20px; color: white; font-size: 15px"><%= tiempoRealizado %></text>
+      <a id="play_button">
+        <i class="material-icons right">play_arrow</i>
+      </a>
+      <a id="pause_button">
+        <i class="material-icons right">pause</i>
+      </a>
+    </div>
+  </div>
+
+  </div>
+</div>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+
+    $('#play_button').on('click', function(){
+      $('#tarjeta').addClass('light-green darken-2').removeClass('blue-grey darken-1');
+    });
+
+    $('#pause_button').on('click', function(){
+      $('#tarjeta').addClass('blue-grey darken-1').removeClass('light-green darken-2');
+    });
+
+  })
+</script>

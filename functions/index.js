@@ -611,13 +611,11 @@ web.get("/inicioProfesor", (request, response) => {
   })
 })
 
-web.get("/nuevaAsignatura", (request, response) => {
-  response.render('formAsignatura', {
-    pagina:"Nueva",
-    abbr:"", 
-    nombre:"", 
-    usuarios:[],
-    accion:"Guardar"
+web.get("/tareas", (request, response) => {
+  response.render('templateAsignatura', {
+    "nombreAsignatura": "Asignatura",
+    "descripcion": "Esto es una tarea",
+    "tiempoRealizado": "00:00:00"
   });
 })
 

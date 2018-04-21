@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<%- include('partials/header') %>
+</head>
+<body>
+	
+	<!-- Navbar -->
+	<%- include('partials/navbar') %>
+
+	<div class="container" style="margin-bottom: 20px">
+		<h3 class="center"><%= nombreAsignatura %></h3>
+	</div>
+
+	<!-- Tareas cards -->
+	<div>
+		<div class="row">
+			<%- include('partials/cardsTareas') %>
+		</div>
+	</div>
+
+	<!-- Action Button -->
+	<%- include('partials/actionButton') %>
+
+</body>
+</html>
