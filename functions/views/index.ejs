@@ -30,22 +30,22 @@
       
       <!-- Formulario -->
       <div class="row">
-        <form class="col s12">
+        <form class="col s12" action="/loginEmail" method="post">
           <div class="row">
             <div class="input-field col s12">
               <i class="material-icons prefix">account_circle</i>
-              <input id="icon_prefix" type="text" class="validate">
-              <label for="icon_prefix">Correo electronico</label>
+              <input id="email_text" name="email_text" type="text" class="validate">
+              <label for="email_text">Correo electronico</label>
             </div>
             <br/>
             <div class="input-field col s12">
               <i class="material-icons prefix">lock_outline</i>
-              <input id="icon_telephone" type="password" class="validate">
-              <label for="icon_telephone">Contraseña</label>
+              <input id="password_text" name="password_text" type="password" class="validate">
+              <label for="password_text">Contraseña</label>
             </div>
           </div>
+          <button class="btn waves-effect waves-light" type="submit" name="action" style="float: right">Entrar</button>
         </form>
-        <a href="" class="btn" style="float: right">Entrar</a>
       </div>
 
       <!-- Otras opciones -->
@@ -53,7 +53,7 @@
       <center>
         <div class="row">
           <div class="col s12">
-            <a class="btn red darken-1" style="width: 60%">
+            <a id="boton_google" class="btn red darken-1" style="width: 60%">
               <i class="fa fa-google"></i> 
               <text>Iniciar con Google</text>
             </a>
@@ -71,4 +71,20 @@
 
     </div>
   </body>
+
+
+  <script type="text/javascript">
+    $(document).ready(function(){
+      /*$('#email_btn').on('click', function(){
+        var email = $('#icon_prefix').val();
+        var password = $('#icon_telephone').val();
+
+        $.post("/login", {"email": email, "pass": password, "method": "emailPass"}).done(function(){location.reload()});
+
+      })*/
+    });
+
+
+  </script>
+
 </html>

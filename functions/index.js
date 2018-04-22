@@ -582,14 +582,60 @@ app.post('/usuario', (req, res) => {
 ****************************************************/
 const web = express();
 
-//app.engine('hbs', engines.handlebars);
 web.set('views', './views');
-//app.set('view engine', 'hbs');
-web.set('view engine', 'ejs')
+web.set('view engine', 'ejs');
 
+/**
+*   Configuracion para servicios Firebase
+**/
+var firebase = require('firebase');
+
+var config = {
+  apiKey: "AIzaSyDoWGVZpr_u5SKVQk3zNaQ-t98i0JWdzvw",
+  authDomain: "odsi-gestiontiempos.firebaseapp.com",
+  databaseURL: "https://odsi-gestiontiempos.firebaseio.com",
+  projectId: "odsi-gestiontiempos",
+  storageBucket: "odsi-gestiontiempos.appspot.com",
+  messagingSenderId: "921623046756"
+};
+
+firebase.initializeApp(config);
+
+
+/**
+*   Routing
+**/
 web.get("/", (request, response) => {
-  response.render('index', {});
+  var user = firebase.auth().currentUser;
+  if(user != null){
+    request.user = user;
+    // Usuario normal
+    response.redirect('/inicioUsuario');
+  }
+  else{
+    response.render('index', {});
+  }
 });
+
+web.post("/loginEmail", (request, response) => {
+  var json = request.body;
+  firebase.auth().signInWithEmailAndPassword(json.email_text, json.password_text);
+
+  firebase.auth().onAuthStateChanged(user => {
+    if(user){
+      response.redirect('inicioUsuario');
+    }else{
+      console.log("No user")
+    }
+  })
+
+});
+
+
+web.get("/logout", (request, response) => {
+  firebase.auth().signOut();
+  response.redirect("/");
+})
 
 web.get("/inicioUsuario", (request, response) => {
   response.render('templateUser', {
@@ -597,7 +643,8 @@ web.get("/inicioUsuario", (request, response) => {
     nombre: ["Organización y Dirección de Sistemas de Información", "Gestión Intensiva de Datos: Big Data", "Sistemas Gráficos Interactivos", "Integración de las Tecnologías de la Información y Técnicas Avanzadas de Ingeniería del Software", "Codificación y Criptografia", "Diseño de Sistemas de Alto Rendimiento", "Razonamiento Automático", "Gestión y Administración de Infraestructuras Informáticas", "Sistemas Ubícuos y Empotrados", "Interfaces de Usuario y Acceso Universal", "Métodos Numéricos"],
     pagina:"Nueva",
   });
-})
+});
+
 
 web.get("/inicioProfesor", (request, response) => {
   response.render('templateTeacher', {
