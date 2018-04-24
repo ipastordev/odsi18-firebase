@@ -601,6 +601,15 @@ var config = {
 
 firebase.initializeApp(config);
 
+var rest = require('request');
+
+var options = {
+  url: 'https://us-central1-odsi-gestiontiempos.cloudfunctions.net/asignaturas/usuario?uEmail=jgarcia001@ikasle.ehu.es',
+  headers: {
+    'authorization': "Bearer ODSI18"
+  }
+}
+
 
 /**
 *   Routing
@@ -623,14 +632,25 @@ web.post("/loginEmail", (request, response) => {
 
   firebase.auth().onAuthStateChanged(user => {
     if(user){
-      response.redirect('inicioUsuario');
+
+      rest(options, function (error, res, body) {
+        // Respuesta en body
+        body = body.replace("[", "");
+        body = body.replace("]", "");
+
+        body = JSON.parse(body);
+        if (body.Profesor)
+          response.redirect('inicioProfesor');
+        else
+          response.redirect('inicioUsuario');
+      });
+
     }else{
       console.log("No user")
     }
   })
 
 });
-
 
 web.get("/logout", (request, response) => {
   firebase.auth().signOut();
