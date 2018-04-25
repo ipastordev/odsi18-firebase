@@ -428,7 +428,7 @@ function deleteUsuarioAsignatura(json){
 ////////////////////////////////////USUARIOS/////////////////////////////////////
 
 //key: UTF-8 encoded, cannot contain . $ # [ ] /
-app.post('/usuario', (req, res) => {
+app.post('/registrarUsuario', (req, res) => {
     const json = req.body;
     
     var msg = "[";
@@ -576,6 +576,7 @@ app.post('/usuario', (req, res) => {
   });
 
 
+exports.usuarios = functions.https.onRequest(app);
 
 /**************************************************
               HOSTING - PAGINA WEB
@@ -588,7 +589,7 @@ web.set('view engine', 'ejs');
 /**
 *   Configuracion para servicios Firebase
 **/
-var firebase = require('firebase');
+/*var firebase = require('firebase');
 
 var config = {
   apiKey: "AIzaSyDoWGVZpr_u5SKVQk3zNaQ-t98i0JWdzvw",
@@ -601,37 +602,34 @@ var config = {
 
 firebase.initializeApp(config);
 
-var rest = require('request');
-
-var options = {
-  url: 'https://us-central1-odsi-gestiontiempos.cloudfunctions.net/asignaturas/usuario?uEmail=jgarcia001@ikasle.ehu.es',
-  headers: {
-    'authorization': "Bearer ODSI18"
-  }
-}
+}*/
 
 
 /**
 *   Routing
 **/
 web.get("/", (request, response) => {
-  var user = firebase.auth().currentUser;
-  if(user != null){
+  /*var user = firebase.auth().currentUser;
+  if(user !== null){
     request.user = user;
     // Usuario normal
     response.redirect('/inicioUsuario');
   }
   else{
     response.render('index', {});
-  }
+  }*/
+
+  response.render('index', {});
 });
 
 web.post("/loginEmail", (request, response) => {
   var json = request.body;
-  firebase.auth().signInWithEmailAndPassword(json.email_text, json.password_text);
+  //firebase.auth().signInWithEmailAndPassword(json.email_text, json.password_text);
 
-  firebase.auth().onAuthStateChanged(user => {
+  /*firebase.auth().onAuthStateChanged(user => {
     if(user){
+
+      options.url = 'https://us-central1-odsi-gestiontiempos.cloudfunctions.net/asignaturas/usuario?uEmail=jgarcia001@ikasle.ehu.es';
 
       rest(options, function (error, res, body) {
         // Respuesta en body
@@ -648,12 +646,12 @@ web.post("/loginEmail", (request, response) => {
     }else{
       console.log("No user")
     }
-  })
+  })*/
 
 });
 
 web.get("/logout", (request, response) => {
-  firebase.auth().signOut();
+  //firebase.auth().signOut();
   response.redirect("/");
 })
 
@@ -685,5 +683,25 @@ web.get("/tareas", (request, response) => {
     "tiempoRealizado": "00:00:00"
   });
 })
+
+
+web.get("/registro", (request, response) => {
+  response.render('signUp');
+});
+
+web.post("/newUser", (request, response) => {
+  var json = request.body;
+
+  /*firebase.auth().createUserWithEmailAndPassword(json.email, json.password).catch(function(err){
+    console.log(error);
+  });*/
+
+  options.url = 'https://us-central1-odsi-gestiontiempos.cloudfunctions.net/asignaturas/usuario';
+
+  rest.post(options, json, function(error, res, body){
+    console.log(error);
+  });
+
+});
 
 exports.web = functions.https.onRequest(web);

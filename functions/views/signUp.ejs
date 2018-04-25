@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<%- include('partials/header') %>
+
+	<style media="screen">
+      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
+      #message { background: white; max-width: 500px; margin: 100px auto 16px; padding: 32px 24px 16px; border-radius: 3px; }
+      #message h3 { color: #888; font-weight: normal; font-size: 16px; margin: 16px 0 12px; }
+      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
+      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
+      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
+      
+      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
+      @media (max-width: 600px) {
+        body, #message { margin-top: 0; background: white; box-shadow: none; }
+        body { border-top: 16px solid #ffa100; }
+      }
+    </style>
+
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+</head>
+<body>
+
+	<div id="message">
+		<h2>Registro</h2>
+
+		<!-- Formulario -->
+		<div class="row">
+			<form class="col s12">
+	          <div class="row">
+	            <div class="input-field col s12">
+	              <i class="material-icons prefix">account_circle</i>
+	              <input id="name_text" name="name_text" type="text" class="validate">
+	              <label for="name_text">Nombre</label>
+	            </div>
+
+	            <br/>
+
+	            <div class="input-field col s12">
+	            	<i class="material-icons prefix">icono</i>
+	            	<input id="surname_text" type="text" name="surname_text" class="validate">
+	            	<label for="surname_text">Apellidos</label>
+	            </div>
+
+	            <br/>
+
+	            <div class="input-field col s12">
+	            	<i class="material-icons prefix">email</i>
+	            	<input id="email_text" type="text" name="email_text" class="validate">
+	            	<label for="email_text">Correo electronico</label>
+	            </div>
+
+	            <br/>
+
+	            <div class="input-field col s12">
+	              <i class="material-icons prefix">lock_outline</i>
+	              <input id="password_text" name="password_text" type="password" class="validate">
+	              <label for="password_text">Contraseña</label>
+	            </div>
+
+
+	          </div>
+	          <a id="sendData" class="btn waves-effect waves-light" name="action" style="float: right">Enviar</a>
+	        </form>
+		</div>
+
+	</div>
+
+</body>
+
+<script type="text/javascript">
+	
+	$(document).ready(function(){
+
+		$('#sendData').on('click', function(){
+
+			var json = {
+				"name": $('#name_text').val(),
+				"surname": $('#surname_text').val(),
+				"email": $('#email_text').val(),
+				"password": $('#password_text').val()
+			};
+
+			$.post("/newUser", json).done(function(){
+				window.location.replace("/");
+			});
+		});
+
+	});
+
+</script>
+
+
+</html>
