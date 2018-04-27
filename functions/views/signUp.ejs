@@ -70,25 +70,38 @@
 
 </body>
 
+<script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyDoWGVZpr_u5SKVQk3zNaQ-t98i0JWdzvw",
+    authDomain: "odsi-gestiontiempos.firebaseapp.com",
+    databaseURL: "https://odsi-gestiontiempos.firebaseio.com",
+    projectId: "odsi-gestiontiempos",
+    storageBucket: "odsi-gestiontiempos.appspot.com",
+    messagingSenderId: "921623046756"
+  };
+  firebase.initializeApp(config);
+</script>
+
 <script type="text/javascript">
 	
 	$(document).ready(function(){
-
 		$('#sendData').on('click', function(){
-
-			var json = {
-				"name": $('#name_text').val(),
-				"surname": $('#surname_text').val(),
-				"email": $('#email_text').val(),
-				"password": $('#password_text').val()
-			};
-
-			$.post("/newUser", json).done(function(){
-				window.location.replace("/");
-			});
+			var email = $('#email_text').val();
+			var pass = $('#password_text').val();
+			
+			const promise = firebase.auth().signInWithEmailAndPassword(email, pass);
 		});
-
 	});
+
+	firebase.auth().onAuthStateChanged(user => {
+		if(user)
+			console.log("Esta el usuario")
+		else
+			console.log("No esta")
+	})
+		
 
 </script>
 
