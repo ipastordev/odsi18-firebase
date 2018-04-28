@@ -88,19 +88,15 @@
 	
 	$(document).ready(function(){
 		$('#sendData').on('click', function(){
+			var name = $('#name_text').val();
+			var surname = $('#surname_text').val();
 			var email = $('#email_text').val();
 			var pass = $('#password_text').val();
-			
-			const promise = firebase.auth().signInWithEmailAndPassword(email, pass);
+
+			firebase.auth().createUserWithEmailAndPassword(email, pass).catch(function(error){});
+
 		});
 	});
-
-	firebase.auth().onAuthStateChanged(user => {
-		if(user)
-			console.log("Esta el usuario")
-		else
-			console.log("No esta")
-	})
 		
 
 </script>

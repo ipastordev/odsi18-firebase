@@ -28,7 +28,7 @@
       
       <!-- Formulario -->
       <div class="row">
-        <form class="col s12" action="/loginEmail" method="post">
+        <form class="col s12">
           <div class="row">
             <div class="input-field col s12">
               <i class="material-icons prefix">account_circle</i>
@@ -42,9 +42,11 @@
               <label for="password_text">Contraseña</label>
             </div>
           </div>
-          <button class="btn waves-effect waves-light" type="submit" name="action" style="float: right">Entrar</button>
+          <a class="btn waves-effect waves-light" id="login" name="action" style="float: right">Entrar</a>
         </form>
       </div>
+      <h3>¿Qué no tienes cuenta?</h3>
+      <a href="/registro">Regístrate</a>
 
       <!-- Otras opciones -->
       <!--<hr><br>
@@ -71,18 +73,40 @@
   </body>
 
 
-  <script type="text/javascript">
-    $(document).ready(function(){
-      /*$('#email_btn').on('click', function(){
-        var email = $('#icon_prefix').val();
-        var password = $('#icon_telephone').val();
+<script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyDoWGVZpr_u5SKVQk3zNaQ-t98i0JWdzvw",
+    authDomain: "odsi-gestiontiempos.firebaseapp.com",
+    databaseURL: "https://odsi-gestiontiempos.firebaseio.com",
+    projectId: "odsi-gestiontiempos",
+    storageBucket: "odsi-gestiontiempos.appspot.com",
+    messagingSenderId: "921623046756"
+  };
+  firebase.initializeApp(config);
+</script>
 
-        $.post("/login", {"email": email, "pass": password, "method": "emailPass"}).done(function(){location.reload()});
+<script type="text/javascript">
+  
+  $(document).ready(function(){
+    $('#login').on('click', function(){
+      var email = $('#email_text').val();
+      var pass = $('#password_text').val();
 
-      })*/
+      firebase.auth().signInWithEmailAndPassword(email, pass);
+
+      firebase.auth().onAuthStateChanged(user => {
+        if(user)
+          console.log("Esta el usuario")
+        else
+          console.log("No esta")
+        });
+      });
+
     });
+    
 
-
-  </script>
+</script>
 
 </html>

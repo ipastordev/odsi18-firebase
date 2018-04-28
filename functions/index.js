@@ -586,39 +586,11 @@ const web = express();
 web.set('views', './views');
 web.set('view engine', 'ejs');
 
-/**
-*   Configuracion para servicios Firebase
-**/
-/*var firebase = require('firebase');
-
-var config = {
-  apiKey: "AIzaSyDoWGVZpr_u5SKVQk3zNaQ-t98i0JWdzvw",
-  authDomain: "odsi-gestiontiempos.firebaseapp.com",
-  databaseURL: "https://odsi-gestiontiempos.firebaseio.com",
-  projectId: "odsi-gestiontiempos",
-  storageBucket: "odsi-gestiontiempos.appspot.com",
-  messagingSenderId: "921623046756"
-};
-
-firebase.initializeApp(config);
-
-}*/
-
 
 /**
 *   Routing
 **/
 web.get("/", (request, response) => {
-  /*var user = firebase.auth().currentUser;
-  if(user !== null){
-    request.user = user;
-    // Usuario normal
-    response.redirect('/inicioUsuario');
-  }
-  else{
-    response.render('index', {});
-  }*/
-
   response.render('index', {});
 });
 
@@ -651,7 +623,6 @@ web.post("/loginEmail", (request, response) => {
 });
 
 web.get("/logout", (request, response) => {
-  //firebase.auth().signOut();
   response.redirect("/");
 })
 
@@ -679,7 +650,7 @@ web.get("/inicioProfesor", (request, response) => {
 web.get("/tareas", (request, response) => {
   response.render('templateAsignatura', {
     "nombreAsignatura": "Asignatura",
-    "descripcion": "Esto es una tarea",
+    "descripcion": "Esto es una tarea \n Tiempo estimado: es relativo",
     "tiempoRealizado": "00:00:00"
   });
 })
@@ -687,21 +658,6 @@ web.get("/tareas", (request, response) => {
 
 web.get("/registro", (request, response) => {
   response.render('signUp');
-});
-
-web.post("/newUser", (request, response) => {
-  var json = request.body;
-
-  /*firebase.auth().createUserWithEmailAndPassword(json.email, json.password).catch(function(err){
-    console.log(error);
-  });*/
-
-  options.url = 'https://us-central1-odsi-gestiontiempos.cloudfunctions.net/asignaturas/usuario';
-
-  rest.post(options, json, function(error, res, body){
-    console.log(error);
-  });
-
 });
 
 exports.web = functions.https.onRequest(web);
