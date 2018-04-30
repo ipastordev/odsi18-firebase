@@ -594,34 +594,6 @@ web.get("/", (request, response) => {
   response.render('index', {});
 });
 
-web.post("/loginEmail", (request, response) => {
-  var json = request.body;
-  //firebase.auth().signInWithEmailAndPassword(json.email_text, json.password_text);
-
-  /*firebase.auth().onAuthStateChanged(user => {
-    if(user){
-
-      options.url = 'https://us-central1-odsi-gestiontiempos.cloudfunctions.net/asignaturas/usuario?uEmail=jgarcia001@ikasle.ehu.es';
-
-      rest(options, function (error, res, body) {
-        // Respuesta en body
-        body = body.replace("[", "");
-        body = body.replace("]", "");
-
-        body = JSON.parse(body);
-        if (body.Profesor)
-          response.redirect('inicioProfesor');
-        else
-          response.redirect('inicioUsuario');
-      });
-
-    }else{
-      console.log("No user")
-    }
-  })*/
-
-});
-
 web.get("/logout", (request, response) => {
   response.redirect("/");
 })
