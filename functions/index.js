@@ -332,12 +332,24 @@ app.get('/usuario-asignatura', (req, res) => {
 		});
   	}else if(idUsuario){
 	   	return ref.child("Usuarios_Asignaturas").orderByChild("IdUsuario").equalTo(idUsuario).once('value').then((snapshot) => {
-		    let messages = [];
+		    let subjectsToFetch = [];
 		    snapshot.forEach(function(childSnapshot) {
-			     messages.push(childSnapshot);
+			     subjectsToFetch.push(childSnapshot.child("IdAsignatura").val());
   			});
-	    	return res.status(200).json(messages);
-	 	});
+
+        const subjectPromises = subjectsToFetch.map(id => ref.child("Asignaturas").child(id).once('value'));
+        
+        return Promise.all(subjectPromises)
+          .then((subjects) => {
+             subjects.forEach(function(subject) {
+               console.log(subject.key);
+            });
+            return res.status(200).json(subjects);
+          })
+          
+
+	    	
+      });
   	}
   	res.status(200).send("OK");
 });
