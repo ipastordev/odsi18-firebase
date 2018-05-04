@@ -596,29 +596,77 @@ admin.initializeApp({
 }, "web");
 
 
+var tokenUser = "";
+
+
 /**
 *   Routing
 **/
+
+
+                /**     Pagina de login       **/
+
+// Renderizar la página.
 web.get("/", (request, response) => {
   response.render('index', {});
 });
 
+// Recibir el token del usuario y comprobar que esta
 web.post("/", (request, response) => {
   var idToken = request.body.user;
   admin.auth().verifyIdToken(idToken).then(function(decodedToken){
     var uid = decodedToken.uid;
-    if(uid != null)
+    if(uid != null){
+      tokenUser = idToken;
       response.status(200).end();
+    }
     else
       response.status(404).end();
   })
 })
+
+
+web.get("/inicio", (request, response) => {
+  admin.auth().verifyIdToken(tokenUser).then(function(decodedToken){
+    var udi = decodedToken.uid;
+    if(uid != null){
+
+      /*
+        Comprobar si es estudiante o profesor.
+          - Estudiante:
+              response.render('templateUser', {
+                abbr: ... , 
+                nombre: ... ,
+                pagina: "Nueva",
+              });
+          - Profesor:
+              response.render('templateTeacher', {
+                abbr: ..., 
+                nombre: ...,
+                abbrForm: "", 
+                nombreForm:"", 
+                usuarios:[],
+                pagina: "Nueva",
+                accion:"Guardar"
+              });
+      */
+
+
+    }else
+      response.status(404).end();
+  });
+});
+
+
+
 
 web.get("/logout", (request, response) => {
   response.redirect("/");
 })
 
 web.get("/inicioUsuario", (request, response) => {
+  console.log(tokenUser);
+
   response.render('templateUser', {
     abbr: ["ODSI", "GID", "SGI", "ITI", "CCR", "DSAR", "RA", "GAII", "SUE", "IUAU", "MN"], 
     nombre: ["Organización y Dirección de Sistemas de Información", "Gestión Intensiva de Datos: Big Data", "Sistemas Gráficos Interactivos", "Integración de las Tecnologías de la Información y Técnicas Avanzadas de Ingeniería del Software", "Codificación y Criptografia", "Diseño de Sistemas de Alto Rendimiento", "Razonamiento Automático", "Gestión y Administración de Infraestructuras Informáticas", "Sistemas Ubícuos y Empotrados", "Interfaces de Usuario y Acceso Universal", "Métodos Numéricos"],
