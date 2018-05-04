@@ -586,6 +586,15 @@ const web = express();
 web.set('views', './views');
 web.set('view engine', 'ejs');
 
+admin.initializeApp({
+  credential: admin.credential.cert({
+    projectId: "odsi-gestiontiempos",
+    clientEmail: "firebase-adminsdk-iejqr@odsi-gestiontiempos.iam.gserviceaccount.com",
+    privateKey: "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCpOsh+xrb7gW2Z\nnvWktDt/RDq13m+QOKVZfdQPr2oj89AfoT+mbkqVgV2NLh+pSET/GAQ71RaBoZqC\naPM7jdwokzrDWBRZlm9M/RVudBQwSMrL3yeBL8t6C2LQ+3RXYqAEjCsrnnD7479u\nwepVlitKo6VXBLsVZnQveIy2CfKbP44Iy8fyv+t4+vuYi9N4KN5LJDi6rXUrLSGh\n1NCQ8Gxs8vR9lhvAqJjB3IoltYP1rWpltfssorT1AU4FZLdtVyg0TmLp93SMPUa+\nRur1WJGBIPU1YBB25HtjaVMVaYB3qi/zb3hkkpSZOd4YYjScCSsRXCTgiYViusGx\nDBhMOYKXAgMBAAECggEAB1iq7X344ZArzthst3qvfoXaupxuYWdkHi9tLkUiKW9j\nIIxic/ojuLvF8OQIsdOWUzCatnI4qOX4DCM8M+CjpwtFKMfBEmaKbGAsNwBJBBOU\n4ibM0znc7m5iGspfsY9xfOEM2rblFro7TDaU0qRTOslB2zY0XOh2sLzd9uUVqBGX\nKYRAZW0I6Xh6QE5bd3uZPand4eVhCh3tI/fgkFKeh0rdh32Nf75+YbD4sPUkr5Wx\nSfhGFbV24RUac5tlTQj/RaS25A+5beKnr2j4h0Us9wEKyfdyhfqYjxVCYihX8qE0\nGsn1/+9gOt4CYOFMEUHb76bGTeuobIANwsTlMHU4cQKBgQDRfJTXr+YmpCKNqE/h\nxgCKa6UH5z4WXmOWXKF3mADFMxHM0UQ/Nf2MFsaCTo3oHPxLOomljA8g9f8yqmQW\nk/hngfosOsSzEJRC+wmiDTIl/loOOGacEhN0knWOiIELPLf4n5r+YVW7sTPkU5Mr\n7H544Ys3koXxNzpuWqb0b0A2/wKBgQDOzfRb/8Zkai5jP/5qpY3aSH8kP+4pTkZq\nnb3fY15vWt4cksHj+8bXvfNaXFf2H5BhJ/khK0erhbanTeD2eT34srCq3zGKuAfl\nEqKFQ2s8QP/KMWm1aaoyIGxNYE0jh1Pe9yRmZ+Tra7xwGwqEXJWoEBQOzj4JUBTF\n5qr4XrEMaQKBgBPF+J6rQcQf9gr8+h1LfT2Tj45Ba4DdA/VrZOpO9LOocGOu1QxK\nYlZYyAAAvjBMnBvVuKxhngP0dFQp9SyUZvwOLrkCCxMD25q+61faewNPEN0KwdS1\neBSmxmXfyJ5w6sSS/CRKt7bxsP46TUf2GLH8SBHEyNPN7LwB3oRwA9WtAoGBAJ6h\nABUphqYzhE2BIsfvIXYUMeI+X5KzhfP191TIxgEodEL6l1snH4kRHP9s4dPatkaw\nALreleUNdeOzKyIkMdL4TedjuH6tVvDxcFREOJdJTGttp6YN3Q0CLdDUU5czELRw\nYi1i+AdU5oAfXdvVoL3/R0NsE83U7Xo3y2EkUS4xAoGBAJUYmgNjp9dYeaQ1V/oZ\n5zsOcQQ5Yf8YYAm9/pYHyRP3HjYIp9HsFbf7sLxgHhFlIae9SpjFtejw83bPd6hE\nrMyeMc9GENtmQB/ZuxHuZuEP1yDFw2OmDypuWaU5JvpRITxgGEN4tdlHvXzRzSm1\ng2kL9Qp5xqRCxLPGuh4d+5iH\n-----END PRIVATE KEY-----\n",
+  }),
+  databaseURL: "https://odsi-gestiontiempos.firebaseio.com"
+}, "web");
+
 
 /**
 *   Routing
@@ -593,6 +602,17 @@ web.set('view engine', 'ejs');
 web.get("/", (request, response) => {
   response.render('index', {});
 });
+
+web.post("/", (request, response) => {
+  var idToken = request.body.user;
+  admin.auth().verifyIdToken(idToken).then(function(decodedToken){
+    var uid = decodedToken.uid;
+    if(uid != null)
+      response.status(200).end();
+    else
+      response.status(404).end();
+  })
+})
 
 web.get("/logout", (request, response) => {
   response.redirect("/");

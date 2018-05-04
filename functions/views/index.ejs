@@ -90,17 +90,37 @@
 <script type="text/javascript">
   
   $(document).ready(function(){
+
+    firebase.auth().onAuthStateChanged(user => {
+      if(user){
+        console.log("Esta el usuario")
+
+        // Get user idToken and send it to the BackEnd
+        firebase.auth().currentUser.getIdToken(true).then(function(idToken){
+          $.post("/", {user: idToken})
+            .done(function(){
+              document.location.replace('/inicioUsuario');
+            })
+            .fail(function(){
+              console.log("Mal")
+            });
+        }).catch(function(error){
+          console.log(error)
+        })
+
+      }
+      else
+        console.log("No esta")
+    });
+
+
     $('#login').on('click', function(){
-      var email = $('#email_text').val();
-      var pass = $('#password_text').val();
+        var email = $('#email_text').val();
+        var pass = $('#password_text').val();
 
-      firebase.auth().signInWithEmailAndPassword(email, pass);
-
-      firebase.auth().onAuthStateChanged(user => {
-        if(user)
-          console.log("Esta el usuario")
-        else
-          console.log("No esta")
+        firebase.auth().signInWithEmailAndPassword(email, pass).catch(function(error){
+          console.log("Error en login");
+          console.log(error);
         });
       });
 
