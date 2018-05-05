@@ -22,6 +22,24 @@
     
   </head>
   <body>
+
+    <div class="preloader-background" 
+      style="display: flex; align-items: center; justify-content: center; background-color: #eee; position: fixed; z-index: 100; top: 0; left: 0; right: 0; bottom: 0;">
+      <div class="preloader-wrapper big active">
+        <div class="spinner-layer spinner-blue-only">
+          <div class="circle-clipper left">
+            <div class="circle"></div>
+          </div>
+          <div class="gap-patch">
+            <div class="circle"></div>
+          </div>
+          <div class="circle-clipper right">
+            <div class="circle"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div id="message">
       <h2>ODSI - Gestion de Tiempos</h2>
       <h1>Iniciar sesión</h1>
@@ -47,28 +65,6 @@
       </div>
       <h3>¿Qué no tienes cuenta?</h3>
       <a href="/registro">Regístrate</a>
-
-      <!-- Otras opciones -->
-      <!--<hr><br>
-      <center>
-        <div class="row">
-          <div class="col s12">
-            <a id="boton_google" class="btn red darken-1" style="width: 60%">
-              <i class="fa fa-google"></i> 
-              <text>Iniciar con Google</text>
-            </a>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col s12">
-            <a class="btn indigo darken-2" style="width: 60%">
-              <i class="fa fa-facebook"></i>
-              <text>Iniciar con Facebook</text>
-            </a>
-          </div>
-        </div>
-      </center> -->
-
     </div>
   </body>
 
@@ -92,6 +88,8 @@
   $(document).ready(function(){
 
     firebase.auth().onAuthStateChanged(user => {
+      $('.preloader-background').delay(1700).fadeOut('slow');
+
       if(user){
         console.log("Esta el usuario")
 
@@ -109,8 +107,10 @@
         })
 
       }
-      else
+      else{
+        $('.preloader-wrapper').delay(1700).fadeOut();
         console.log("No esta")
+      }
     });
 
 
