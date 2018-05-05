@@ -9,7 +9,7 @@
     <!-- Acciones dentro de card -->
     <div class="row">
     <div class="card-action">
-      <text style="margin-left:20px; color: white; font-size: 15px"><%= tiempoRealizado %></text>
+      <text id="tiempoRealizado" style="margin-left:20px; color: white; font-size: 15px"><%= tiempoRealizado %></text>
       <a id="play_button">
         <i class="material-icons right">play_arrow</i>
       </a>
@@ -25,12 +25,37 @@
 <script type="text/javascript">
   $(document).ready(function(){
 
+    var monitorizar; // Para crear el intervalo
+
     $('#play_button').on('click', function(){
       $('#tarjeta').addClass('light-green darken-2').removeClass('blue-grey darken-1');
+
+      // Funcion que se llama cada segundo
+      monitorizar = setInterval(function(){
+        // Conseguir el valor del momento y separarlo
+        var textoTiempo = $('#tiempoRealizado').text();
+        textoTiempo = textoTiempo.split(":");
+
+        // Crear un date para incrementar +1 los segundos
+        var tiempo = new Date("2017", "04", "30", textoTiempo[0], textoTiempo[1], textoTiempo[2], "0");
+        tiempo.setSeconds(tiempo.getSeconds()+1);
+
+        var valores = new Date(tiempo.getTime()); // Crear nuevo Date para recuparar datos.
+        // Formato 00:00:00
+        var horas = ("0"+valores.getHours()).slice(-2);
+        var mins  = ("0"+valores.getMinutes()).slice(-2);
+        var secs  = ("0"+valores.getSeconds()).slice(-2);
+
+        $('#tiempoRealizado').text(horas+":"+mins+":"+secs); // Reescribir el valor
+
+      }, 1000);
+
+
     });
 
     $('#pause_button').on('click', function(){
       $('#tarjeta').addClass('blue-grey darken-1').removeClass('light-green darken-2');
+      clearInterval(monitorizar); // Parar el intervalo
     });
 
   })

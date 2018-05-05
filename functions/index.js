@@ -581,9 +581,7 @@ app.post('/registrarUsuario', (req, res) => {
   
       var key = "U:"+uEmail;
       return ref.child("Usuarios").child(key).once('value').then((snapshot) => {
-          let messages = [];
-          messages.push(snapshot);
-          return res.status(200).json(messages);
+          return res.status(200).json(snapshot);
           });
   });
 
@@ -598,100 +596,96 @@ const web = express();
 web.set('views', './views');
 web.set('view engine', 'ejs');
 
-/**
-*   Configuracion para servicios Firebase
-**/
-/*var firebase = require('firebase');
 
-var config = {
-  apiKey: "AIzaSyDoWGVZpr_u5SKVQk3zNaQ-t98i0JWdzvw",
-  authDomain: "odsi-gestiontiempos.firebaseapp.com",
-  databaseURL: "https://odsi-gestiontiempos.firebaseio.com",
-  projectId: "odsi-gestiontiempos",
-  storageBucket: "odsi-gestiontiempos.appspot.com",
-  messagingSenderId: "921623046756"
+admin.initializeApp(functions.config().firebase, "web");
+
+var tokenUser = "";
+var emailUser = "";
+
+var rest = require("request");
+var options = {
+  headers: {
+    'Authorization': 'Bearer ODSI18'
+  }
 };
 
-firebase.initializeApp(config);
-
-}*/
 
 
 /**
 *   Routing
 **/
-web.get("/", (request, response) => {
-  /*var user = firebase.auth().currentUser;
-  if(user !== null){
-    request.user = user;
-    // Usuario normal
-    response.redirect('/inicioUsuario');
-  }
-  else{
-    response.render('index', {});
-  }*/
 
+// Renderizar la página.
+web.get("/", (request, response) => {
   response.render('index', {});
 });
 
-web.post("/loginEmail", (request, response) => {
-  var json = request.body;
-  //firebase.auth().signInWithEmailAndPassword(json.email_text, json.password_text);
+// Recibir el token del usuario y comprobar que esta
+web.post("/", (request, response) => {
+  var idToken = request.body.user;
+  emailUser = request.body.email;
 
-  /*firebase.auth().onAuthStateChanged(user => {
-    if(user){
-
-      options.url = 'https://us-central1-odsi-gestiontiempos.cloudfunctions.net/asignaturas/usuario?uEmail=jgarcia001@ikasle.ehu.es';
-
-      rest(options, function (error, res, body) {
-        // Respuesta en body
-        body = body.replace("[", "");
-        body = body.replace("]", "");
-
-        body = JSON.parse(body);
-        if (body.Profesor)
-          response.redirect('inicioProfesor');
-        else
-          response.redirect('inicioUsuario');
-      });
-
-    }else{
-      console.log("No user")
+  admin.auth().verifyIdToken(idToken).then(function(decodedToken){
+    var uid = decodedToken.uid;
+    if(uid != null){
+      tokenUser = idToken;
+      response.status(200).end();
     }
-  })*/
-
-});
-
-web.get("/logout", (request, response) => {
-  //firebase.auth().signOut();
-  response.redirect("/");
+    else
+      response.status(404).end();
+  })
 })
 
-web.get("/inicioUsuario", (request, response) => {
-  response.render('templateUser', {
-    abbr: ["ODSI", "GID", "SGI", "ITI", "CCR", "DSAR", "RA", "GAII", "SUE", "IUAU", "MN"], 
-    nombre: ["Organización y Dirección de Sistemas de Información", "Gestión Intensiva de Datos: Big Data", "Sistemas Gráficos Interactivos", "Integración de las Tecnologías de la Información y Técnicas Avanzadas de Ingeniería del Software", "Codificación y Criptografia", "Diseño de Sistemas de Alto Rendimiento", "Razonamiento Automático", "Gestión y Administración de Infraestructuras Informáticas", "Sistemas Ubícuos y Empotrados", "Interfaces de Usuario y Acceso Universal", "Métodos Numéricos"],
-    pagina:"Nueva",
+
+
+web.get("/inicio", (request, response) => {
+  admin.auth().verifyIdToken(tokenUser).then(function(decodedToken){
+    var uid = decodedToken.uid;
+    if(uid != null){
+        
+      // BackEnd request to check if user is a teacher
+      rest('http://localhost:5001/odsi-gestiontiempos/us-central1/asignaturas/usuario?uEmail='+emailUser, options, function(error, res, body){
+        var json = res.body;
+        json = JSON.parse(json); // Converts array data to JSON and sets data types
+
+        if(json.Profesor){
+          // User is a teacher
+          response.render('templateTeacher', {
+            abbr: ["ODSI", "GID", "SGI", "ITI", "CCR", "DSAR", "RA", "GAII", "SUE", "IUAU", "MN"], 
+            nombre: ["Organización y Dirección de Sistemas de Información", "Gestión Intensiva de Datos: Big Data", "Sistemas Gráficos Interactivos", "Integración de las Tecnologías de la Información y Técnicas Avanzadas de Ingeniería del Software", "Codificación y Criptografia", "Diseño de Sistemas de Alto Rendimiento", "Razonamiento Automático", "Gestión y Administración de Infraestructuras Informáticas", "Sistemas Ubícuos y Empotrados", "Interfaces de Usuario y Acceso Universal", "Métodos Numéricos"],
+            abbrForm:"", 
+            nombreForm:"", 
+            usuarios:[],
+            pagina: "Nueva",
+            accion:"Guardar"
+          });
+        }else{
+          // User is a student
+          response.render('templateUser', {
+            abbr: ["ODSI", "GID", "SGI", "ITI", "CCR", "DSAR", "RA", "GAII", "SUE", "IUAU", "MN"], 
+            nombre: ["Organización y Dirección de Sistemas de Información", "Gestión Intensiva de Datos: Big Data", "Sistemas Gráficos Interactivos", "Integración de las Tecnologías de la Información y Técnicas Avanzadas de Ingeniería del Software", "Codificación y Criptografia", "Diseño de Sistemas de Alto Rendimiento", "Razonamiento Automático", "Gestión y Administración de Infraestructuras Informáticas", "Sistemas Ubícuos y Empotrados", "Interfaces de Usuario y Acceso Universal", "Métodos Numéricos"],
+            pagina:"Nueva",
+          });
+        }
+      })
+
+    }else
+      response.status(404).end();
   });
 });
 
 
-web.get("/inicioProfesor", (request, response) => {
-  response.render('templateTeacher', {
-    abbr: ["ODSI", "GID", "SGI", "ITI", "CCR", "DSAR", "RA", "GAII", "SUE", "IUAU", "MN"], 
-    nombre: ["Organización y Dirección de Sistemas de Información", "Gestión Intensiva de Datos: Big Data", "Sistemas Gráficos Interactivos", "Integración de las Tecnologías de la Información y Técnicas Avanzadas de Ingeniería del Software", "Codificación y Criptografia", "Diseño de Sistemas de Alto Rendimiento", "Razonamiento Automático", "Gestión y Administración de Infraestructuras Informáticas", "Sistemas Ubícuos y Empotrados", "Interfaces de Usuario y Acceso Universal", "Métodos Numéricos"],
-    abbrForm:"", 
-    nombreForm:"", 
-    usuarios:[],
-    pagina: "Nueva",
-    accion:"Guardar"
-  })
+
+
+web.get("/logout", (request, response) => {
+  response.redirect("/");
 })
+
 
 web.get("/tareas", (request, response) => {
   response.render('templateAsignatura', {
     "nombreAsignatura": "Asignatura",
-    "descripcion": "Esto es una tarea",
+    "descripcion": "Esto es una tarea \n Tiempo estimado: es relativo",
     "tiempoRealizado": "00:00:00"
   });
 })
@@ -699,21 +693,6 @@ web.get("/tareas", (request, response) => {
 
 web.get("/registro", (request, response) => {
   response.render('signUp');
-});
-
-web.post("/newUser", (request, response) => {
-  var json = request.body;
-
-  /*firebase.auth().createUserWithEmailAndPassword(json.email, json.password).catch(function(err){
-    console.log(error);
-  });*/
-
-  options.url = 'https://us-central1-odsi-gestiontiempos.cloudfunctions.net/asignaturas/usuario';
-
-  rest.post(options, json, function(error, res, body){
-    console.log(error);
-  });
-
 });
 
 exports.web = functions.https.onRequest(web);
