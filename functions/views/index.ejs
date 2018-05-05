@@ -97,9 +97,9 @@
 
         // Get user idToken and send it to the BackEnd
         firebase.auth().currentUser.getIdToken(true).then(function(idToken){
-          $.post("/", {user: idToken})
+          $.post("/", {user: idToken, email: firebase.auth().currentUser.email})
             .done(function(){
-              document.location.replace('/inicioUsuario');
+              document.location.replace('/inicio');
             })
             .fail(function(){
               console.log("Mal en token")
