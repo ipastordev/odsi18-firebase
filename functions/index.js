@@ -627,12 +627,19 @@ web.post("/", (request, response) => {
 
   admin.auth().verifyIdToken(idToken).then(function(decodedToken){
     var uid = decodedToken.uid;
-    if(uid != null){
+    if(uid !== null){
       tokenUser = idToken;
       response.status(200).end();
+      return null;
     }
-    else
+    else{
       response.status(404).end();
+      return null;
+    }
+
+  }).catch(function(error){
+    console.log(error);
+    return null;
   })
 })
 
@@ -641,8 +648,7 @@ web.post("/", (request, response) => {
 web.get("/inicio", (request, response) => {
   admin.auth().verifyIdToken(tokenUser).then(function(decodedToken){
     var uid = decodedToken.uid;
-    if(uid != null){
-        
+    if(uid !== null){
       // BackEnd request to check if user is a teacher
       rest('http://localhost:5001/odsi-gestiontiempos/us-central1/asignaturas/usuario?uEmail='+emailUser, options, function(error, res, body){
         var json = res.body;
@@ -668,9 +674,15 @@ web.get("/inicio", (request, response) => {
           });
         }
       })
-
-    }else
+    }else{
       response.status(404).end();
+    }
+
+    return null;
+    
+  }).catch(function(error){
+    console.log(error);
+    return null;
   });
 });
 
