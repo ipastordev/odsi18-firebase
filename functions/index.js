@@ -316,7 +316,7 @@ app.get('/usuario-asignatura', (req, res) => {
 	const idUsuario = req.query.idUsuario;
 	const idAsignatura = req.query.idAsignatura;
 	if(idUsuario && idAsignatura){
-	    var key = "U:"+idUsuario+"-A:"+idAsignatura;
+	    var key = "U:"+encodeKey(idUsuario)+"-A:"+idAsignatura;
 	    return ref.child("Usuarios_Asignaturas").child(key).once('value').then((snapshot) => {
 		    let messages = [];
 		    messages.push(snapshot);
@@ -356,7 +356,7 @@ app.get('/usuario-asignatura', (req, res) => {
 
 app.post('/usuario-asignatura', (req, res) => {
 	const json = req.body;
-	var key = "U:"+json.idUsuario+"-A:"+json.idAsignatura;
+	var key = "U:"+encodeKey(json.idUsuario)+"-A:"+json.idAsignatura;
   	ref.child("Usuarios_Asignaturas").child(key).set({
    	 	IdUsuario: json.idUsuario,
     	IdAsignatura: json.idAsignatura
@@ -372,7 +372,7 @@ app.delete('/usuario-asignatura', (req, res) => {
 
 app.post('/updateUsuarioAsignatura', (req,res) => {
 	const json = req.body;
-	var key = "U:"+json.idUsuario+"-A:"+json.idAsignatura;
+	var key = "U:"+encodeKey(json.idUsuario)+"-A:"+json.idAsignatura;
 
     rels = ref.child("Usuarios_Asignaturas/"+key).once("value", function(snapshot){
 		var exists = (snapshot.val() !== null);
@@ -392,7 +392,8 @@ app.post('/updateUsuarioAsignatura', (req,res) => {
 app.post('/usuario-asignatura-multiple', (req, res) => {
   	const jsonArray = req.body;
   	jsonArray.forEach(function(json) {
-  		var key = "U:"+json.idUsuario+"-A:"+json.idAsignatura;
+  		var key = "U:"+encodeKey(json.idUsuario)+"-A:"+json.idAsignatura;
+      console.log(key);
 	  	ref.child("Usuarios_Asignaturas").child(key).set({
 	   	 	IdUsuario: json.idUsuario,
 	    	IdAsignatura: json.idAsignatura
@@ -404,7 +405,7 @@ app.post('/usuario-asignatura-multiple', (req, res) => {
 app.delete('/usuario-asignatura-multiple', (req, res) => {
   	const jsonArray = req.body;
   	jsonArray.forEach(function(json) {
-  		var key = "U:"+json.idUsuario+"-A:"+json.idAsignatura;
+  		var key = "U:"+encodeKey(json.idUsuario)+"-A:"+json.idAsignatura;
 		ref.child("Usuarios_Asignaturas").child(key).remove();
 	});
   res.status(200).send("OK");
@@ -416,7 +417,7 @@ exports.usuariosAsignaturas = functions.https.onRequest(app);
 
 function deleteUsuarioAsignatura(json){
   if(json.idUsuario && json.idAsignatura){
-    key = "U:"+json.idUsuario+"-A:"+json.idAsignatura;
+    key = "U:"+encodeKey(json.idUsuario)+"-A:"+json.idAsignatura;
     ref.child("Usuarios_Asignaturas").child(key).remove();
   }else if(json.idAsignatura){
     rels = ref.child("Usuarios_Asignaturas").orderByChild("IdAsignatura").equalTo(json.idAsignatura);
