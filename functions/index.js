@@ -28,35 +28,35 @@ app.get('/getAsignatura', (req, res) => {
 
 app.post('/addAsignatura', (req, res) => {
     const json = req.body;
-    var msg = "[";
+    var msg = "{";
 
     var msg_idSubject = checkIsValidString(json.idAsignatura, "Introduzca el identificador de la asignatura");
     if(msg_idSubject !== ""){
-      msg = msg + "'" + msg_idSubject +  "'";
+      msg = msg + '"msg_idSubject":' + '"' + msg_idSubject +  '"';
     }
   
     var msg_nameSubject = checkIsValidString(json.idNombre, "Introduzca el nombre de la asignatura");
     if(msg_nameSubject !== ""){
-        if(msg !== "["){
+        if(msg !== "{"){
           msg = msg + ", ";
         }
-        msg = msg +  "'" + msg_nameSubject +  "'";
+        msg = msg + '"msg_nameSubject":' + '"' + msg_nameSubject +  '"';
     }
   
     var msg_descriptionSubject = checkIsValidString(json.idDescripcion, "Introduzca la descripción de la asignatura");
     if(msg_descriptionSubject !== ""){
-      if(msg !== "["){
+      if(msg !== "{"){
           msg = msg + ", ";
         }
-      msg = msg +  "'" + msg_descriptionSubject +  "'";
+        msg = msg + '"msg_descriptionSubject":' + '"' + msg_descriptionSubject +  '"';
     }
   
-    msg = msg + "]";
+    msg = msg + "}";
 
-    if(msg === "[]") {
+    if(msg === "{}") {
         //Almacenar asignatura en la BD y mostrar mensaje informandole al usuario
         console.log('Guardada asignatura: ' + json.idAsignatura + " " + json.idNombre + " " + json.idDescripcion);
-        msg = "['La asignatura se creó correctamente']";
+        msg = '{"msg_success": "La asignatura se creó correctamente"}';
         var key = json.idAsignatura;
         ref.child("Asignaturas").child(key).set({
             Descripcion: json.idDescripcion,
@@ -65,7 +65,9 @@ app.post('/addAsignatura', (req, res) => {
     }else{
         console.log('No se pudo guardar asignatura: ' + json.idAsignatura + " " + json.idNombre + " " + json.idDescripcion);
     }
-  	res.status(200).json(msg);
+
+  	res.set('content-type', 'application/json');
+    res.status(200).send(msg);
 });
 
 app.post('/updateAsignatura', (req,res) => {
@@ -114,54 +116,54 @@ app.get('/getTarea', (req, res) => {
 app.post('/addTarea', (req, res) => {
     const json = req.body;
     
-    var msg = "[";
+    var msg = "{";
 
     var msg_idHomework = checkIsValidString(json.idTarea, "Introduzca el identificador de la tarea");
     if(msg_idHomework !== ""){
-        msg = msg + "'" + msg_idHomework +  "'";
+      msg = msg + '"msg_idHomework":' + '"' + msg_idHomework +  '"';
     }
 
     var msg_nameHomework = checkIsValidString(json.idNombre, "Introduzca el nombre de la tarea");
     if(msg_nameHomework !== ""){
-        if(msg !== "["){
+        if(msg !== "{"){
             msg = msg + ", ";
         }
-        msg = msg +  "'" + msg_nameHomework +  "'";
+        msg = msg + '"msg_nameHomework":' + '"' + msg_nameHomework +  '"';
     }
 
     var msg_estimatedTime = checkIsValidEstimatedTime(json.idTiempo);
     if(msg_estimatedTime !== ""){
-        if(msg !== "["){
+        if(msg !== "{"){
             msg = msg + ", ";
         }
-        msg = msg +  "'" + msg_estimatedTime +  "'";
+        msg = msg + '"msg_estimatedTime":' + '"' + msg_estimatedTime +  '"';
     }
-
 
     var msg_creationDate = checkIsValidCreationDate(json.idFecha);
     if(msg_creationDate !== ""){
-        if(msg !== "["){
+        if(msg !== "{"){
             msg = msg + ", ";
         }
-        msg = msg + "'" + msg_creationDate +  "'";
+        msg = msg + '"msg_creationDate":' + '"' + msg_creationDate +  '"';
     }
-    msg = msg + "]";
+    msg = msg + "}";
 
-    if(msg === "[]") {
+    if(msg === "{}") {
         //Almacenar tarea en la BD y mostrar mensaje informandole al usuario
         console.log('Guardada tarea: '  + json.idTarea + " " + json.idNombre + " "  + json.idTiempo + " " + json.idFecha);
-        msg = "['La tarea se creó correctamente']";
+        msg = '{"msg_success": "La tarea se creó correctamente"}';
         var key = json.idTarea;
         ref.child("Tareas").child(key).set({
-              Fecha_de_creacion: json.idFecha,
+          Fecha_de_creacion: json.idFecha,
           Nombre_de_la_tarea: json.idNombre,
           Tiempo_estimado: json.idTiempo
       });
     }else {
         console.log('No se pudo guardar tarea: ' + json.idTarea + " " + json.idNombre + " "  + json.idTiempo + " " + json.idFecha);
     }
-    res.status(200).json(msg);
-
+  
+    res.set('content-type', 'application/json');
+    res.status(200).send(msg);
   	
 });
 
@@ -442,57 +444,85 @@ function deleteUsuarioAsignatura(json){
 
 //key: UTF-8 encoded, cannot contain . $ # [ ] /
 app.post('/registrarUsuario', (req, res) => {
-    const json = req.body;
+  const json = req.body;
+  
+  var msg = "{";
+
+  var msg_name = checkIsValidString(json.uNombre, "Introduzca el nombre");
+  if(msg_name !== ""){
+    msg = msg + '"msg_name":' + '"' + msg_name +  '"';
+  }
+
+  var msg_surname = checkIsValidString(json.uApellido, "Introduzca los apellidos");
+  if(msg_surname !== ""){
+      if(msg !== "{"){
+        msg = msg + ", ";
+      }
+      msg = msg + '"msg_surname":' + '"' + msg_surname +  '"';
+  }
+
+  var msg_email = checkIsValidEmail(json.uEmail);
+  if(msg_email !== ""){
+    if(msg !== "{"){
+        msg = msg + ", ";
+      }
+      msg = msg + '"msg_email":' + '"' + msg_email +  '"';
+  }
+
+  var msg_password = checkIsValidPassword(json.uPassword);
+  if(msg_password !== ""){
+    if(msg !== "{"){
+        msg = msg + ", ";
+      }
+      msg = msg + '"msg_password":' + '"' + msg_password +  '"';
+  }
+
+  var msg_isTeacher = checkIsValidIsTeacher(json.uProfesor);
+  if(msg_isTeacher !== ""){
+    if(msg !== "{"){
+        msg = msg + ", ";
+      }
+      msg = msg + '"msg_isTeacher":' + '"' + msg_isTeacher +  '"';
+  }
+
+  //Ver si existe un usuario con ese email (key)
+  ref.child("Usuarios").child("U:"+encodeKey(json.uEmail)).once('value')
+  .then(snapshot => {
     
-    var msg = "[";
-  
-    var msg_name = checkIsValidString(json.uNombre, "Introduzca el nombre del usuario");
-    if(msg_name !== ""){
-      msg = msg + "'" + msg_name +  "'";
-    }
-  
-    var msg_surname = checkIsValidString(json.uApellido, "Introduzca el apellido del usuario");
-    if(msg_surname !== ""){
-        if(msg !== "["){
-          msg = msg + ", ";
+    if (snapshot.exists()) {
+        if(msg !== "{"){
+            msg = msg + ", ";
         }
-        msg = msg +  "'" + msg_surname +  "'";
-    }
-  
-    var msg_email = checkIsValidEmail(json.uEmail);
-    if(msg_email !== ""){
-      if(msg !== "["){
-          msg = msg + ", ";
+        msg = msg + '"msg_emailUsed": "Ya existe un usuario con ese email"';
+        msg = msg + "}";
+        console.log(msg);
+        
+    }else{
+        msg = msg + "}";
+        if(msg === "{}") {
+            //Almacenar usuario en la BD y mostrar mensaje informandole al usuario
+            console.log('Guardado usuario: ' + json.uNombre + " " + json.uApellido + " " + json.uEmail + " " + json.uProfesor);
+            msg = '{"msg_success": "El usuario se creó correctamente"}';
+            var key = "U:"+encodeKey(json.uEmail);
+             ref.child("Usuarios").child(key).set({
+                Nombre: json.uNombre,
+                Apellido: json.uApellido,
+                Profesor: json.uProfesor
+            });
+        }else {
+            console.log('No se pudo guardar usuario: ' + json.uNombre + " " + json.uApellido + " " + json.uEmail + " " + json.uProfesor);
         }
-      msg = msg +  "'" + msg_email +  "'";
-    }
-  
-  
-    var msg_isTeacher = checkIsValidIsTeacher(json.uProfesor);
-    if(msg_isTeacher !== ""){
-      if(msg !== "["){
-          msg = msg + ", ";
-        }
-      msg = msg + "'" + msg_isTeacher +  "'";
-    }
-    msg = msg + "]";
-  
-    if(msg === "[]") {
-        //Almacenar usuario en la BD y mostrar mensaje informandole al usuario
-        console.log('Guardado usuario: ' + json.uNombre + " " + json.uApellido + " " + json.uEmail + " " + json.uProfesor);
-        msg = "['El usuario se creó correctamente']";
-        var key = "U:"+encodeKey(json.uEmail);
-        ref.child("Usuarios").child(key).set({
-            Nombre: json.uNombre,
-            Apellido: json.uApellido,
-            Profesor: json.uProfesor
-      });
-    }else {
-        console.log('No se pudo guardar usuario: ' + json.uNombre + " " + json.uApellido + " " + json.uEmail + " " + json.uProfesor);
-    }
-        res.status(200).json(msg);
+  }
+    res.set('content-type', 'application/json');
+    res.status(200).send(msg);
+    return;
+    })
+    .catch(error => {
+        console.log(error);
+    });
   });
-  
+   
+
   function encodeKey(s) {
        return encodeURIComponent(s).replace(/\./g,'%2E'); 
       }
@@ -531,11 +561,29 @@ app.post('/registrarUsuario', (req, res) => {
             m = "El email no tiene el formato correcto";
         }
     }else{
-        m="Introduzca el email del usuario"
+        m="Introduzca el email"
     }
         return m;
    }
-  
+
+
+  //El password tendra al menos 8 caracteres
+  function checkIsValidPassword(p){
+  //A la password no le haceos trim(), ya que eliminaria espacios en blanco que son
+  //parte de la password
+  var m;
+  if(p !== "" && p !== null &&  p !== undefined){
+      if(p.length < 8){
+          m = "La contraseña debe tener al menos 8 carácteres";
+      }else{
+          m = "";
+      }
+  }else{
+      m = "Introduzca la contraseña";
+  }
+  return m;
+  }
+
   
    //Pongo esta funcion o si recibo el param uProfesor y no tiene el valor value
    // supongo que es teacher el usuario ?
